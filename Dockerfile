@@ -4,6 +4,7 @@ FROM rocker/rstudio:4.5.1
 ENV NB_USER=rstudio
 ENV NB_UID=1000
 ENV CONDA_DIR=/srv/conda
+ENV R_LIBS_USER=/srv/r
 ENV DEFAULT_PATH=${PATH}
 
 # Set ENV for all programs...
@@ -63,6 +64,10 @@ RUN rm -f /tmp/environment.yml
 
 USER root
 RUN rm -rf ${HOME}/.cache
+RUN mkdir -p ${R_LIBS_USER}
+# Create user owned R libs dir
+# This lets users temporarily install packages
+RUN install -d -o ${NB_USER} -g ${NB_USER} ${R_LIBS_USER}
 
 # Prepare VS Code extensions
 USER root
@@ -107,7 +112,7 @@ RUN for x in \
   reditorsupport.r \
   ; do code-server --extensions-dir ${VSCODE_EXTENSIONS} --install-extension $x; done
 
-ENV PATH=${CONDA_DIR}/bin:${DEFAULT_PATH}:/usr/lib/rstudio-server/bin
+ENV PATH=${CONDA_DIR}/bin:${R_LIBS_USER}/bin:${DEFAULT_PATH}:/usr/lib/rstudio-server/bin
 
 USER ${NB_USER}
 WORKDIR /home/${NB_USER}
