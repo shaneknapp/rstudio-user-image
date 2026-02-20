@@ -113,8 +113,8 @@ RUN for x in \
   ; do code-server --extensions-dir ${VSCODE_EXTENSIONS} --install-extension $x; done
 
 ENV PATH=${CONDA_DIR}/bin:${R_LIBS_USER}/bin:${DEFAULT_PATH}:/usr/lib/rstudio-server/bin
+COPY --chown=${NB_USER}:${NB_USER} .Renviron /home/${NB_USER}
 
-USER ${NB_USER}
 WORKDIR /home/${NB_USER}
 
 # Set SHELL so Jupyter launches /bin/bash, not /bin/sh
